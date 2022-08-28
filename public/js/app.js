@@ -5304,6 +5304,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   mounted: function mounted() {
@@ -5320,19 +5332,6 @@ __webpack_require__.r(__webpack_exports__);
         }
       },
       deep: true
-    },
-    'guessed_digits_user': {
-      handler: function handler(val, oldVal) {
-        console.log(val.length == 4, this.guessed_digits.length < 4, this.current_turn === 'player');
-
-        if (val.length == 4 && this.guessed_digits.length < 4 && this.current_turn === 'player') {
-          alert('Player wins');
-        }
-
-        if (val.length < 4 && this.guessed_digits.length == 4 && this.current_turn === 'AI') {
-          alert('AI wins');
-        }
-      }
     }
   },
   data: function data() {
@@ -5432,19 +5431,23 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       var is_user_input = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-      var input_digit_one = array.find(function (d) {
+      var digit_one = array.find(function (d) {
         return d.value == 1;
       });
-      var input_digit_eigth = array.find(function (d) {
+      var digit_eigth = array.find(function (d) {
         return d.value == 8;
       });
 
-      if (input_digit_one && input_digit_eigth) {
+      if (digit_one && digit_eigth) {
         axios__WEBPACK_IMPORTED_MODULE_0___default().post('/restrictions/swap', {
           'input_array': array
         }).then(function (response) {
           if (is_user_input) {
-            _this2.user_input_guesess = response.data;
+            if (_this2.show_guesses_card) {
+              _this2.user_input_guesess = response.data;
+            } else {
+              _this2.user_input_number = response.data;
+            }
           } else {
             _this2.generated_gueses = response.data;
           }
@@ -5458,8 +5461,7 @@ __webpack_require__.r(__webpack_exports__);
         'array': array,
         'digit': input,
         'position': position
-      }).then(function (response) {
-        console.log(response.data);
+      }).then(function (response) {// console.log(response.data)
       });
     },
     saveScore: function saveScore() {
@@ -5499,6 +5501,15 @@ __webpack_require__.r(__webpack_exports__);
 
       this.success_message = 'Thank you, your number is saved';
       this.show_success_message = true;
+
+      if (this.user_input_number.find(function (el) {
+        return el.value == 1;
+      }) && this.user_input_number.find(function (el) {
+        return el.value == 8;
+      })) {
+        this.moveDigits(this.user_input_number, true);
+      }
+
       setTimeout(function () {
         _this4.show_success_message = false;
         _this4.show_number_card = false;
@@ -28555,30 +28566,10 @@ var render = function () {
               _c("div", { staticClass: "card-body" }, [
                 _c("div", { staticClass: "flex justify-center items-center" }, [
                   _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.user_input_number[0].value,
-                        expression: "user_input_number[0].value",
-                      },
-                    ],
                     staticClass:
                       "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-                    attrs: { type: "number", min: "1", max: "10" },
-                    domProps: { value: _vm.user_input_number[0].value },
-                    on: {
-                      input: function ($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(
-                          _vm.user_input_number[0],
-                          "value",
-                          $event.target.value
-                        )
-                      },
-                    },
+                    attrs: { type: "number", min: "1", maxlength: "1" },
+                    on: { input: _vm.inputUserNumber },
                   }),
                   _vm._v(" "),
                   _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
@@ -28594,7 +28585,7 @@ var render = function () {
                     ],
                     staticClass:
                       "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-                    attrs: { type: "number" },
+                    attrs: { type: "number", min: "1", max: "9" },
                     domProps: { value: _vm.user_input_number[1].value },
                     on: {
                       input: function ($event) {
@@ -28623,7 +28614,7 @@ var render = function () {
                     ],
                     staticClass:
                       "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-                    attrs: { type: "number" },
+                    attrs: { type: "number", min: "1", max: "9" },
                     domProps: { value: _vm.user_input_number[2].value },
                     on: {
                       input: function ($event) {
@@ -28652,7 +28643,7 @@ var render = function () {
                     ],
                     staticClass:
                       "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-                    attrs: { type: "number" },
+                    attrs: { type: "number", min: "1", max: "9" },
                     domProps: { value: _vm.user_input_number[3].value },
                     on: {
                       input: function ($event) {
@@ -28705,7 +28696,7 @@ var render = function () {
                     ],
                     staticClass:
                       "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-                    attrs: { type: "number", min: "1", max: "10" },
+                    attrs: { type: "number", min: "1", max: "9" },
                     domProps: { value: _vm.user_input_guesess[0].value },
                     on: {
                       input: function ($event) {
@@ -28734,7 +28725,7 @@ var render = function () {
                     ],
                     staticClass:
                       "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-                    attrs: { type: "number" },
+                    attrs: { type: "number", min: "1", max: "9" },
                     domProps: { value: _vm.user_input_guesess[1].value },
                     on: {
                       input: function ($event) {
@@ -28763,7 +28754,7 @@ var render = function () {
                     ],
                     staticClass:
                       "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-                    attrs: { type: "number" },
+                    attrs: { type: "number", min: "1", max: "9" },
                     domProps: { value: _vm.user_input_guesess[2].value },
                     on: {
                       input: function ($event) {
@@ -28792,7 +28783,7 @@ var render = function () {
                     ],
                     staticClass:
                       "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-                    attrs: { type: "number" },
+                    attrs: { type: "number", min: "1", max: "9" },
                     domProps: { value: _vm.user_input_guesess[3].value },
                     on: {
                       input: function ($event) {

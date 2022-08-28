@@ -18,18 +18,20 @@
                             <input
                                 type="number"
                                 min="1"
-                                max="10"
+                                maxlength="1"
                                 class="w-10 h-10 border-2 rounded
                                 outline-none text-center 
                                 font-semibold text-xl spin-button-none 
                                 border-gray-200 focus:border-gray-700 
                                 focus:text-gray-700 text-black transition"
-                                v-model="user_input_number[0].value"
+                                @input="inputUserNumber"
                             />
                             <span class="w-2 py-0.5 bg-gray-400" />
 
                             <input
                                 type="number"
+                                min="1"
+                                max="9"
                                 class="w-10 h-10 border-2 rounded 
                                 outline-none text-center 
                                 font-semibold text-xl spin-button-none 
@@ -42,6 +44,8 @@
 
                             <input
                                 type="number"
+                                min="1"
+                                max="9"
                                 class="w-10 h-10 border-2 rounded 
                                 outline-none text-center 
                                 font-semibold text-xl spin-button-none 
@@ -54,6 +58,8 @@
 
                             <input
                                 type="number"
+                                min="1"
+                                max="9"
                                 class="w-10 h-10 border-2 rounded 
                                 outline-none text-center 
                                 font-semibold text-xl spin-button-none 
@@ -82,7 +88,7 @@
                             <input
                                 type="number"
                                 min="1"
-                                max="10"
+                                max="9"
                                 class="w-10 h-10 border-2 rounded
                                 outline-none text-center 
                                 font-semibold text-xl spin-button-none 
@@ -94,6 +100,8 @@
 
                             <input
                                 type="number"
+                                min="1"
+                                max="9"
                                 class="w-10 h-10 border-2 rounded 
                                 outline-none text-center 
                                 font-semibold text-xl spin-button-none 
@@ -106,6 +114,8 @@
 
                             <input
                                 type="number"
+                                min="1"
+                                max="9"
                                 class="w-10 h-10 border-2 rounded 
                                 outline-none text-center 
                                 font-semibold text-xl spin-button-none 
@@ -117,6 +127,8 @@
 
                             <input
                                 type="number"
+                                min="1"
+                                max="9"
                                 class="w-10 h-10 border-2 rounded 
                                 outline-none text-center 
                                 font-semibold text-xl spin-button-none 
@@ -207,19 +219,6 @@ import axios from 'axios';
                 },
                 deep: true
             },
-
-            'guessed_digits_user': {
-                handler: function (val, oldVal) {
-                    console.log(val.length == 4, this.guessed_digits.length < 4, this.current_turn === 'player')
-                    if(val.length == 4 && this.guessed_digits.length < 4 && this.current_turn === 'player'){
-                        alert('Player wins')
-                    }
-                    
-                    if(val.length < 4 && this.guessed_digits.length == 4 && this.current_turn === 'AI'){
-                        alert('AI wins')
-                    }
-                },
-            },
         },
 
         data(){
@@ -289,6 +288,7 @@ import axios from 'axios';
                         if(digit == 4 || digit == 5){
                             this.changePosition(array, digit, array.length)
                         }
+ 
                         array.push(digit);
                     } 
                 }
@@ -323,16 +323,21 @@ import axios from 'axios';
             },
 
             moveDigits(array, is_user_input=true){
-                let input_digit_one = array.find(d => d.value == 1);
-                let input_digit_eigth = array.find(d => d.value == 8);
+                let digit_one = array.find(d => d.value == 1);
+                let digit_eigth = array.find(d => d.value == 8);
 
-                if(input_digit_one && input_digit_eigth){
+                if(digit_one && digit_eigth){
                     axios.post('/restrictions/swap', {
                         'input_array': array
                     })
                     .then(response => {
                         if(is_user_input){
-                            this.user_input_guesess = response.data;
+                            if(this.show_guesses_card){
+                                this.user_input_guesess = response.data;
+                            }
+                            else{
+                                this.user_input_number = response.data;
+                            }
                         }else{
                             this.generated_gueses = response.data;
                         }
@@ -350,7 +355,7 @@ import axios from 'axios';
                     'position': position
                 })
                 .then(response => {
-                    console.log(response.data)
+                    // console.log(response.data)
                 })
             },
 
@@ -395,6 +400,10 @@ import axios from 'axios';
                 this.success_message = 'Thank you, your number is saved';
                 this.show_success_message = true;
                 
+                if(this.user_input_number.find(el => el.value == 1) && this.user_input_number.find(el => el.value == 8)){
+                    this.moveDigits(this.user_input_number, true)
+                }
+
                 setTimeout(() => {
                     this.show_success_message = false;
                     this.show_number_card = false;
