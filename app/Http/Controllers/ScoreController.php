@@ -15,7 +15,7 @@ class ScoreController extends Controller
      */
     public function index()
     {
-        $scores = Score::with('user')->orderBy('full_numbers_found', 'desc')->get();
+        $scores = Score::with('user')->orderBy('full_numbers_found', 'desc')->get()->take(10);
         return view('topScores', ['scores' => $scores]);
     }
 
@@ -27,7 +27,6 @@ class ScoreController extends Controller
      */
     public function store(Request $request)
     {
-        abort(200);
         $data = $request->all();
         $data['user_id'] = auth()->id();
         $score = Score::create($data);
