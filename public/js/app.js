@@ -5111,6 +5111,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 //
 //
 //
@@ -5223,63 +5225,293 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   mounted: function mounted() {
-    this.generateDigits();
+    this.generateDigits(this.generated_digits);
+    this.generateDigits(this.generated_digits_user);
   },
   watch: {
-    'generated_digits': {
+    'user_input_guesess': {
       handler: function handler(val, oldVal) {
-        this.checkForGuessedDigits(val);
+        if (this.current_turn === 'player' && val.every(function (el) {
+          return el.value !== null;
+        })) {
+          this.checkForGuessedDigits(this.generated_digits, this.user_input_guesess);
+        }
       },
       deep: true
+    },
+    'guessed_digits_user': {
+      handler: function handler(val, oldVal) {
+        console.log(val.length == 4, this.guessed_digits.length < 4, this.current_turn === 'player');
+
+        if (val.length == 4 && this.guessed_digits.length < 4 && this.current_turn === 'player') {
+          alert('Player wins');
+        }
+
+        if (val.length < 4 && this.guessed_digits.length == 4 && this.current_turn === 'AI') {
+          alert('AI wins');
+        }
+      }
     }
   },
   data: function data() {
     return {
-      user_input: [{
+      user_input_guesess: [{
+        position: 0,
         value: null
       }, {
+        position: 1,
         value: null
       }, {
+        position: 2,
         value: null
       }, {
+        position: 3,
+        value: null
+      }],
+      user_input_number: [{
+        position: 0,
+        value: null
+      }, {
+        position: 1,
+        value: null
+      }, {
+        position: 2,
+        value: null
+      }, {
+        position: 3,
         value: null
       }],
       generated_digits: [],
-      guessed_bulls: 0,
-      guessed_cows: 0
+      generated_digits_user: [],
+      found_bulls: 0,
+      found_cows: 0,
+      found_bulls_user: 0,
+      found_cows_user: 0,
+      guessed_digits_user_count: 0,
+      guessed_digits_user: [],
+      guessed_digits_count: 0,
+      guessed_digits: [],
+      generated_gueses: [],
+      success_message: null,
+      show_success_message: false,
+      error_message: null,
+      show_error_message: false,
+      show_number_card: true,
+      show_guesses_card: false,
+      current_turn: 'player'
     };
   },
   methods: {
-    generateDigits: function generateDigits() {
-      while (this.generated_digits.length < 4) {
+    generateDigits: function generateDigits(array) {
+      while (array.length < 4) {
         var digit = Math.floor(Math.random() * 10) + 1;
 
-        if (this.generated_digits.indexOf(digit) === -1 && digit <= 9) {
-          this.generated_digits.push(digit);
+        if (array.indexOf(digit) === -1 && digit <= 9) {
+          if (digit == 4 || digit == 5) {
+            this.changePosition(array, digit, array.length);
+          }
+
+          array.push(digit);
         }
       }
     },
-    checkForGuessedDigits: function checkForGuessedDigits(event) {
+    checkForGuessedDigits: function checkForGuessedDigits(generated_array, input_array) {
+      var _this = this;
+
+      var is_user_input = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
       // Check if the generated digits array contains user input
-      var input = event.target.value;
-      var found = this.generated_digits.some(function (digit) {
-        return digit == input;
+      axios__WEBPACK_IMPORTED_MODULE_0___default().post('/digits/found', {
+        'generated_array': generated_array,
+        'input_array': input_array
+      }).then(function (response) {
+        if (is_user_input) {
+          _this.found_bulls_user = response.data['found_bulls'];
+          _this.found_cows_user = response.data['found_cows'];
+          _this.guessed_digits_user_count = response.data['guessed_digits_count'];
+          _this.guessed_digits_user = response.data['guessed_digits'];
+
+          _this.moveDigits(_this.user_input_guesess);
+
+          _this.current_turn = 'AI';
+        } else {
+          _this.found_bulls = response.data['found_bulls'];
+          _this.found_cows = response.data['found_cows'];
+          _this.guessed_digits_count = response.data['guessed_digits_count'];
+          _this.guessed_digits = response.data['guessed_digits'];
+          _this.current_turn = 'player';
+        }
+
+        _this.checkForWinner();
+      })["catch"](function (err) {
+        console.log(err);
+      });
+    },
+    moveDigits: function moveDigits(array) {
+      var _this2 = this;
+
+      var is_user_input = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+      var input_digit_one = array.find(function (d) {
+        return d.value == 1;
+      });
+      var input_digit_eigth = array.find(function (d) {
+        return d.value == 8;
       });
 
-      if (found) {
-        console.log(input);
-        var found_index = this.user_input.indexOf(input);
-        var actual_index = this.generated_digits.indexOf(input);
-        console.log(actual_index); // If so check the position
+      if (input_digit_one && input_digit_eigth) {
+        axios__WEBPACK_IMPORTED_MODULE_0___default().post('/restrictions/swap', {
+          'input_array': array
+        }).then(function (response) {
+          if (is_user_input) {
+            _this2.user_input_guesess = response.data;
+          } else {
+            _this2.generated_gueses = response.data;
+          }
+        })["catch"](function (err) {
+          console.log(err);
+        });
+      }
+    },
+    changePosition: function changePosition(array, input, position) {
+      axios__WEBPACK_IMPORTED_MODULE_0___default().post('/restrictions/move', {
+        'array': array,
+        'digit': input,
+        'position': position
+      }).then(function (response) {
+        console.log(response.data);
+      });
+    },
+    saveScore: function saveScore() {
+      var _this3 = this;
 
-        if (found_index == actual_index) {
-          // Increment the number of found bulls
-          this.guessed_bulls++;
-        } else {
-          this.guessed_cows++;
-        }
+      axios__WEBPACK_IMPORTED_MODULE_0___default().post('/score', {
+        'bulls_found': this.found_bulls,
+        'cows_found': this.found_cows,
+        'full_numbers_found': this.guessed_digits_count
+      }).then(function (response) {
+        _this3.user_input_guesess = [{
+          position: 0,
+          value: null
+        }, {
+          position: 1,
+          value: null
+        }, {
+          position: 2,
+          value: null
+        }, {
+          position: 3,
+          value: null
+        }];
+        _this3.current_turn = 'AI';
+        _this3.show_success_message = true;
+        _this3.success_message = 'Your score, was stored successfully!';
+
+        _this3.checkForGuessedDigits(_this3.generated_digits, _this3.user_input_number, false);
+      })["catch"](function (err) {
+        _this3.show_error_message = true;
+        _this3.error_message = 'Something, went wrong when tryng to save your score';
+        console.log(err);
+      });
+    },
+    save: function save() {
+      var _this4 = this;
+
+      this.success_message = 'Thank you, your number is saved';
+      this.show_success_message = true;
+      setTimeout(function () {
+        _this4.show_success_message = false;
+        _this4.show_number_card = false;
+        _this4.show_guesses_card = true;
+      }, 2000);
+    },
+    checkForWinner: function checkForWinner() {
+      if (this.guessed_digits_user.length == 4 && this.guessed_digits.length < 4 && this.current_turn === 'player') {
+        alert('Player wins');
+      }
+
+      if (this.guessed_digits_user.length < 4 && this.guessed_digits.length == 4 && this.current_turn === 'AI') {
+        alert('AI wins');
       }
     }
   }
@@ -28312,129 +28544,505 @@ var render = function () {
   return _c("div", { staticClass: "container" }, [
     _c("div", { staticClass: "row justify-content-center" }, [
       _c("div", { staticClass: "col-md-8" }, [
-        _c("div", { staticClass: "card" }, [
+        _vm._m(0),
+        _vm._v(" "),
+        _vm.show_number_card
+          ? _c("div", { staticClass: "card mt-10" }, [
+              _c("div", { staticClass: "card-header" }, [
+                _vm._v("What number do you have in mind..."),
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "card-body" }, [
+                _c("div", { staticClass: "flex justify-center items-center" }, [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.user_input_number[0].value,
+                        expression: "user_input_number[0].value",
+                      },
+                    ],
+                    staticClass:
+                      "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
+                    attrs: { type: "number", min: "1", max: "10" },
+                    domProps: { value: _vm.user_input_number[0].value },
+                    on: {
+                      input: function ($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(
+                          _vm.user_input_number[0],
+                          "value",
+                          $event.target.value
+                        )
+                      },
+                    },
+                  }),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.user_input_number[1].value,
+                        expression: "user_input_number[1].value",
+                      },
+                    ],
+                    staticClass:
+                      "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
+                    attrs: { type: "number" },
+                    domProps: { value: _vm.user_input_number[1].value },
+                    on: {
+                      input: function ($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(
+                          _vm.user_input_number[1],
+                          "value",
+                          $event.target.value
+                        )
+                      },
+                    },
+                  }),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.user_input_number[2].value,
+                        expression: "user_input_number[2].value",
+                      },
+                    ],
+                    staticClass:
+                      "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
+                    attrs: { type: "number" },
+                    domProps: { value: _vm.user_input_number[2].value },
+                    on: {
+                      input: function ($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(
+                          _vm.user_input_number[2],
+                          "value",
+                          $event.target.value
+                        )
+                      },
+                    },
+                  }),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.user_input_number[3].value,
+                        expression: "user_input_number[3].value",
+                      },
+                    ],
+                    staticClass:
+                      "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
+                    attrs: { type: "number" },
+                    domProps: { value: _vm.user_input_number[3].value },
+                    on: {
+                      input: function ($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(
+                          _vm.user_input_number[3],
+                          "value",
+                          $event.target.value
+                        )
+                      },
+                    },
+                  }),
+                ]),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary bg-blue-700 position-center",
+                    attrs: { type: "submit" },
+                    on: { click: _vm.save },
+                  },
+                  [
+                    _vm._v(
+                      "\n                            Save\n                        "
+                    ),
+                  ]
+                ),
+              ]),
+            ])
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.show_guesses_card
+          ? _c("div", { staticClass: "card mt-10" }, [
+              _c("div", { staticClass: "card-header" }, [
+                _vm._v("Make your guess..."),
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "card-body" }, [
+                _c("div", { staticClass: "flex justify-center items-center" }, [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.user_input_guesess[0].value,
+                        expression: "user_input_guesess[0].value",
+                      },
+                    ],
+                    staticClass:
+                      "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
+                    attrs: { type: "number", min: "1", max: "10" },
+                    domProps: { value: _vm.user_input_guesess[0].value },
+                    on: {
+                      input: function ($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(
+                          _vm.user_input_guesess[0],
+                          "value",
+                          $event.target.value
+                        )
+                      },
+                    },
+                  }),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.user_input_guesess[1].value,
+                        expression: "user_input_guesess[1].value",
+                      },
+                    ],
+                    staticClass:
+                      "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
+                    attrs: { type: "number" },
+                    domProps: { value: _vm.user_input_guesess[1].value },
+                    on: {
+                      input: function ($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(
+                          _vm.user_input_guesess[1],
+                          "value",
+                          $event.target.value
+                        )
+                      },
+                    },
+                  }),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.user_input_guesess[2].value,
+                        expression: "user_input_guesess[2].value",
+                      },
+                    ],
+                    staticClass:
+                      "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
+                    attrs: { type: "number" },
+                    domProps: { value: _vm.user_input_guesess[2].value },
+                    on: {
+                      input: function ($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(
+                          _vm.user_input_guesess[2],
+                          "value",
+                          $event.target.value
+                        )
+                      },
+                    },
+                  }),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.user_input_guesess[3].value,
+                        expression: "user_input_guesess[3].value",
+                      },
+                    ],
+                    staticClass:
+                      "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
+                    attrs: { type: "number" },
+                    domProps: { value: _vm.user_input_guesess[3].value },
+                    on: {
+                      input: function ($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(
+                          _vm.user_input_guesess[3],
+                          "value",
+                          $event.target.value
+                        )
+                      },
+                    },
+                  }),
+                ]),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary bg-blue-700 position-center",
+                    attrs: { type: "submit" },
+                    on: { click: _vm.saveScore },
+                  },
+                  [
+                    _vm._v(
+                      "\n                            Next\n                        "
+                    ),
+                  ]
+                ),
+              ]),
+            ])
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.show_error_message
+          ? _c(
+              "div",
+              {
+                staticClass:
+                  "bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative",
+                attrs: { role: "alert" },
+              },
+              [
+                _c("strong", { staticClass: "font-bold" }, [
+                  _vm._v("An error occured"),
+                ]),
+                _vm._v(" "),
+                _c("span", { staticClass: "block sm:inline" }, [
+                  _vm._v(_vm._s(_vm.error_message)),
+                ]),
+                _vm._v(" "),
+                _c(
+                  "span",
+                  {
+                    staticClass: "absolute top-0 bottom-0 right-0 px-4 py-3",
+                    on: {
+                      click: function ($event) {
+                        _vm.show_error_message = false
+                      },
+                    },
+                  },
+                  [
+                    _c(
+                      "svg",
+                      {
+                        staticClass: "fill-current h-6 w-6 text-red-500",
+                        attrs: {
+                          role: "button",
+                          xmlns: "http://www.w3.org/2000/svg",
+                          viewBox: "0 0 20 20",
+                        },
+                      },
+                      [
+                        _c("title", [_vm._v("Close")]),
+                        _c("path", {
+                          attrs: {
+                            d: "M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z",
+                          },
+                        }),
+                      ]
+                    ),
+                  ]
+                ),
+              ]
+            )
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.show_success_message
+          ? _c(
+              "div",
+              {
+                staticClass:
+                  "bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative",
+                attrs: { role: "alert" },
+              },
+              [
+                _c("strong", { staticClass: "font-bold" }, [_vm._v("Success")]),
+                _vm._v(" "),
+                _c("span", { staticClass: "block sm:inline" }, [
+                  _vm._v(_vm._s(_vm.success_message)),
+                ]),
+                _vm._v(" "),
+                _c(
+                  "span",
+                  {
+                    staticClass: "absolute top-0 bottom-0 right-0 px-4 py-3",
+                    on: {
+                      click: function ($event) {
+                        _vm.show_success_message = false
+                      },
+                    },
+                  },
+                  [
+                    _c(
+                      "svg",
+                      {
+                        staticClass: "fill-current h-6 w-6 text-green-500",
+                        attrs: {
+                          role: "button",
+                          xmlns: "http://www.w3.org/2000/svg",
+                          viewBox: "0 0 20 20",
+                        },
+                      },
+                      [
+                        _c("title", [_vm._v("Close")]),
+                        _c("path", {
+                          attrs: {
+                            d: "M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z",
+                          },
+                        }),
+                      ]
+                    ),
+                  ]
+                ),
+              ]
+            )
+          : _vm._e(),
+        _vm._v(" "),
+        _c("div", { staticClass: "card mt-10" }, [
           _c("div", { staticClass: "card-header" }, [
-            _vm._v("Give us your predictions"),
+            _vm._v("How is going for you?"),
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "card-body" }, [
-            _c("div", { staticClass: "flex justify-center items-center" }, [
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.user_input[0].value,
-                    expression: "user_input[0].value",
+          _c(
+            "div",
+            { staticClass: "card-body" },
+            [
+              _c("div", { staticClass: "flex" }, [
+                _c("img", {
+                  attrs: {
+                    src: "/images/bull-icon.png",
+                    alt: "",
+                    height: "70px",
+                    width: "70px",
                   },
-                ],
-                staticClass:
-                  "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-                attrs: { type: "number", min: "1", max: "10" },
-                domProps: { value: _vm.user_input[0].value },
-                on: {
-                  change: function ($event) {
-                    return _vm.checkForGuessedDigits($event)
+                }),
+                _vm._v(" "),
+                _c("span", { staticClass: "py-3 -px-2" }, [
+                  _vm._v(": " + _vm._s(_vm.found_bulls_user)),
+                ]),
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "flex" }, [
+                _c("img", {
+                  staticClass: "ml-3",
+                  attrs: {
+                    src: "/images/cow-icon.png",
+                    alt: "",
+                    height: "50px",
+                    width: "50px",
                   },
-                  input: function ($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.user_input[0], "value", $event.target.value)
-                  },
-                },
+                }),
+                _vm._v(" "),
+                _c("span", { staticClass: "pt-3" }, [
+                  _vm._v(": " + _vm._s(_vm.found_cows_user)),
+                ]),
+              ]),
+              _vm._v(" "),
+              _c("p", [
+                _vm._v("Guessed Digits: "),
+                _c("strong", [
+                  _vm._v(_vm._s(_vm.guessed_digits_user_count) + " / 4"),
+                ]),
+              ]),
+              _vm._v(" "),
+              _c("span", [_vm._v("What you found so far:")]),
+              _vm._v(" "),
+              _vm._l(_vm.guessed_digits_user, function (digit, index) {
+                return _c("span", { key: index }, [_vm._v(_vm._s(digit) + " ")])
               }),
-              _vm._v(" "),
-              _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.user_input[1].value,
-                    expression: "user_input[1].value",
-                  },
-                ],
-                staticClass:
-                  "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-                attrs: { type: "number" },
-                domProps: { value: _vm.user_input[1].value },
-                on: {
-                  change: function ($event) {
-                    return _vm.checkForGuessedDigits($event)
-                  },
-                  input: function ($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.user_input[1], "value", $event.target.value)
-                  },
-                },
-              }),
-              _vm._v(" "),
-              _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.user_input[2].value,
-                    expression: "user_input[2].value",
-                  },
-                ],
-                staticClass:
-                  "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-                attrs: { type: "number" },
-                domProps: { value: _vm.user_input[2].value },
-                on: {
-                  change: function ($event) {
-                    return _vm.checkForGuessedDigits($event)
-                  },
-                  input: function ($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.user_input[2], "value", $event.target.value)
-                  },
-                },
-              }),
-              _vm._v(" "),
-              _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.user_input[3].value,
-                    expression: "user_input[3].value",
-                  },
-                ],
-                staticClass:
-                  "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-                attrs: { type: "number" },
-                domProps: { value: _vm.user_input[3].value },
-                on: {
-                  change: function ($event) {
-                    return _vm.checkForGuessedDigits($event)
-                  },
-                  input: function ($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.user_input[3], "value", $event.target.value)
-                  },
-                },
-              }),
-            ]),
-          ]),
+            ],
+            2
+          ),
         ]),
         _vm._v(" "),
-         false
-          ? 0
-          : _vm._e(),
+        _c("div", { staticClass: "card mt-10" }, [
+          _c("div", { staticClass: "card-header" }, [
+            _vm._v("How is going for the other guy?"),
+          ]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "card-body" },
+            [
+              _c("div", { staticClass: "flex" }, [
+                _c("img", {
+                  attrs: {
+                    src: "/images/bull-icon.png",
+                    alt: "",
+                    height: "70px",
+                    width: "70px",
+                  },
+                }),
+                _vm._v(" "),
+                _c("span", { staticClass: "py-3 -px-2" }, [
+                  _vm._v(": " + _vm._s(_vm.found_bulls)),
+                ]),
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "flex" }, [
+                _c("img", {
+                  staticClass: "ml-3",
+                  attrs: {
+                    src: "/images/cow-icon.png",
+                    alt: "",
+                    height: "50px",
+                    width: "50px",
+                  },
+                }),
+                _vm._v(" "),
+                _c("span", { staticClass: "pt-3" }, [
+                  _vm._v(": " + _vm._s(_vm.found_cows)),
+                ]),
+              ]),
+              _vm._v(" "),
+              _c("p", [
+                _vm._v("Guessed Digits: "),
+                _c("strong", [
+                  _vm._v(_vm._s(_vm.guessed_digits_count) + " / 4"),
+                ]),
+              ]),
+              _vm._v(" "),
+              _c("span", [_vm._v("What you found so far: ")]),
+              _vm._v(" "),
+              _vm._l(_vm.guessed_digits, function (digit, index) {
+                return _c("span", { key: index }, [_vm._v(_vm._s(digit) + " ")])
+              }),
+            ],
+            2
+          ),
+        ]),
       ]),
     ]),
   ])
@@ -28444,37 +29052,28 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card-body" }, [
-      _c("div", { staticClass: "flex justify-center items-center" }, [
-        _c("input", {
-          staticClass:
-            "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-          attrs: { type: "number" },
-        }),
-        _vm._v(" "),
-        _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
-        _vm._v(" "),
-        _c("input", {
-          staticClass:
-            "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-          attrs: { type: "number" },
-        }),
-        _vm._v(" "),
-        _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
-        _vm._v(" "),
-        _c("input", {
-          staticClass:
-            "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-          attrs: { type: "number" },
-        }),
-        _vm._v(" "),
-        _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
-        _vm._v(" "),
-        _c("input", {
-          staticClass:
-            "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-          attrs: { type: "number" },
-        }),
+    return _c("div", { staticClass: "card" }, [
+      _c("div", { staticClass: "card-header" }, [
+        _vm._v("What is this all about?"),
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "card-body" }, [
+        _c("p", [
+          _vm._v(
+            'This is a simple version of the logical game "Buls & Cows", if you are not familliar with the rules you can do it by clicking\n                         '
+          ),
+          _c(
+            "a",
+            {
+              attrs: {
+                href: "https://en.wikipedia.org/wiki/Bulls_and_Cows",
+                target: "_blank",
+                rel: "noopener noreferrer",
+              },
+            },
+            [_vm._v("here")]
+          ),
+        ]),
       ]),
     ])
   },
@@ -40588,6 +41187,18 @@ webpackContext.id = "./resources/js sync recursive \\.vue$/";
 /******/ 				}
 /******/ 			}
 /******/ 			return result;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
 /******/ 		};
 /******/ 	})();
 /******/ 	
