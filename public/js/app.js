@@ -5492,15 +5492,25 @@ __webpack_require__.r(__webpack_exports__);
         _this3.checkForGuessedDigits(_this3.generated_digits, _this3.user_input_number, false);
       })["catch"](function (err) {
         _this3.show_error_message = true;
-        _this3.error_message = 'Something, went wrong when tryng to save your score';
+        _this3.error_message = 'The input may not be greater than 9.';
         console.log(err);
       });
     },
     save: function save() {
       var _this4 = this;
 
-      this.success_message = 'Thank you, your number is saved';
-      this.show_success_message = true;
+      axios__WEBPACK_IMPORTED_MODULE_0___default().post('/restrictions/validate', {
+        'input_array': this.user_input_number
+      }).then(function (response) {
+        _this4.success_message = 'Thank you, your number is saved';
+        _this4.show_error_message = false;
+        _this4.show_success_message = true;
+        _this4.show_number_card = false;
+        _this4.show_guesses_card = true;
+      })["catch"](function (err) {
+        _this4.show_error_message = true;
+        _this4.error_message = 'The input may not be greater than 9.';
+      });
 
       if (this.user_input_number.find(function (el) {
         return el.value == 1;
@@ -5509,12 +5519,6 @@ __webpack_require__.r(__webpack_exports__);
       })) {
         this.moveDigits(this.user_input_number, true);
       }
-
-      setTimeout(function () {
-        _this4.show_success_message = false;
-        _this4.show_number_card = false;
-        _this4.show_guesses_card = true;
-      }, 2000);
     },
     checkForWinner: function checkForWinner() {
       if (this.guessed_digits_user.length == 4 && this.guessed_digits.length < 4 && this.current_turn === 'player') {
@@ -28566,10 +28570,30 @@ var render = function () {
               _c("div", { staticClass: "card-body" }, [
                 _c("div", { staticClass: "flex justify-center items-center" }, [
                   _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.user_input_number[0].value,
+                        expression: "user_input_number[0].value",
+                      },
+                    ],
                     staticClass:
                       "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-                    attrs: { type: "number", min: "1", maxlength: "1" },
-                    on: { input: _vm.inputUserNumber },
+                    attrs: { type: "number", min: "1", maxlength: 1 },
+                    domProps: { value: _vm.user_input_number[0].value },
+                    on: {
+                      input: function ($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(
+                          _vm.user_input_number[0],
+                          "value",
+                          $event.target.value
+                        )
+                      },
+                    },
                   }),
                   _vm._v(" "),
                   _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),

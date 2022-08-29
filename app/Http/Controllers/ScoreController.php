@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\InputRequest;
 use App\Models\Score;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
@@ -25,9 +26,9 @@ class ScoreController extends Controller
      * @param Request $request
      * @return response json
      */
-    public function store(Request $request)
+    public function store(InputRequest $request)
     {
-        $data = $request->all();
+        $data = $request->validated();
         $data['user_id'] = auth()->id();
         $score = Score::create($data);
         

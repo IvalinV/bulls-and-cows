@@ -18,13 +18,13 @@
                             <input
                                 type="number"
                                 min="1"
-                                maxlength="1"
+                                :maxlength="1"
                                 class="w-10 h-10 border-2 rounded
                                 outline-none text-center 
                                 font-semibold text-xl spin-button-none 
                                 border-gray-200 focus:border-gray-700 
                                 focus:text-gray-700 text-black transition"
-                                @input="inputUserNumber"
+                                v-model="user_input_number[0].value"
                             />
                             <span class="w-2 py-0.5 bg-gray-400" />
 
@@ -391,24 +391,32 @@ import axios from 'axios';
                 })
                 .catch(err => {
                     this.show_error_message = true;
-                    this.error_message = 'Something, went wrong when tryng to save your score';
+                    this.error_message = 'The input may not be greater than 9.';
                     console.log(err)
                 })
             },
 
             save(){
-                this.success_message = 'Thank you, your number is saved';
-                this.show_success_message = true;
+                axios.post('/restrictions/validate', {
+                    'input_array': this.user_input_number
+                })
+                .then(response => {
+                    this.success_message = 'Thank you, your number is saved';
+
+                    this.show_error_message = false;
+                    this.show_success_message = true;
+                    
+                    this.show_number_card = false;
+                    this.show_guesses_card = true;
+                })
+                .catch(err => {
+                    this.show_error_message = true;
+                    this.error_message = 'The input may not be greater than 9.';
+                })
                 
                 if(this.user_input_number.find(el => el.value == 1) && this.user_input_number.find(el => el.value == 8)){
                     this.moveDigits(this.user_input_number, true)
                 }
-
-                setTimeout(() => {
-                    this.show_success_message = false;
-                    this.show_number_card = false;
-                    this.show_guesses_card = true;
-                }, 2000);
             },
 
             checkForWinner(){

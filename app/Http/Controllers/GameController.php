@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\InputRequest;
 use Illuminate\Http\Request;
 
 class GameController extends Controller
@@ -12,21 +13,23 @@ class GameController extends Controller
      * @param Request $request
      * @return array $result
      */
-    public function checkForFoundNumbers(Request $request)
+    public function checkForFoundNumbers(InputRequest $request)
     {
         $result['found_bulls'] = 0;
         $result['found_cows'] = 0;
         $result['guessed_digits_count'] = 0;
         $result['guessed_digits'] = [];
 
-        foreach($request->input_array as $element){
+        $requestData = $request->validated();
+
+        foreach($requestData['input_array'] as $element){
             $input = $element['value'];
 
-            $found = array_search($input, $request->generated_array);
+            $found = array_search($input, $requestData['generated_array']);
 
             if($found !== false){
                 $actual_index = $element['position'];
-                $found_index = array_search($input, $request->generated_array);
+                $found_index = array_search($input, $requestData['generated_array']);
                 // $input_record = $request->input_array[$found_index];
                 // $record = $request->generated_array[$actual_index];
     

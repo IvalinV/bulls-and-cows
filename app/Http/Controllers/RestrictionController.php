@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\InputRequest;
 use Illuminate\Http\Request;
 
 class RestrictionController extends Controller
@@ -12,7 +13,7 @@ class RestrictionController extends Controller
      * @param Request $request
      * @return array $input
      */
-    public function swap(Request $request)
+    public function swap(InputRequest $request)
     {
         $input = $request->input_array;
         $input_collection = collect($request->input_array);
@@ -38,7 +39,7 @@ class RestrictionController extends Controller
      * @param Request $request
      * @return void
      */
-    public function changePosition(Request $request)
+    public function changePosition(InputRequest $request)
     {
         $input_array = $request->array;
         $digit = $request->digit;
@@ -59,5 +60,11 @@ class RestrictionController extends Controller
         }
 
         return response()->json($input_array);
+    }
+
+    public function validateInput(InputRequest $request)
+    {
+        # code...
+        return response()->json($request->validated());
     }
 }
