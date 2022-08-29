@@ -5316,6 +5316,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   mounted: function mounted() {
@@ -5379,7 +5381,8 @@ __webpack_require__.r(__webpack_exports__);
       show_error_message: false,
       show_number_card: true,
       show_guesses_card: false,
-      current_turn: 'player'
+      current_turn: 'player',
+      validation_errors: []
     };
   },
   methods: {
@@ -5424,7 +5427,8 @@ __webpack_require__.r(__webpack_exports__);
 
         _this.checkForWinner();
       })["catch"](function (err) {
-        console.log(err);
+        _this.show_error_message = true;
+        _this.validation_errors = err.response.data.errors;
       });
     },
     moveDigits: function moveDigits(array) {
@@ -5492,8 +5496,7 @@ __webpack_require__.r(__webpack_exports__);
         _this3.checkForGuessedDigits(_this3.generated_digits, _this3.user_input_number, false);
       })["catch"](function (err) {
         _this3.show_error_message = true;
-        _this3.error_message = 'The input may not be greater than 9.';
-        console.log(err);
+        _this3.validation_errors = err.response.data.errors;
       });
     },
     save: function save() {
@@ -5509,7 +5512,7 @@ __webpack_require__.r(__webpack_exports__);
         _this4.show_guesses_card = true;
       })["catch"](function (err) {
         _this4.show_error_message = true;
-        _this4.error_message = 'The input may not be greater than 9.';
+        _this4.validation_errors = err.response.data.errors;
       });
 
       if (this.user_input_number.find(function (el) {
@@ -5519,6 +5522,10 @@ __webpack_require__.r(__webpack_exports__);
       })) {
         this.moveDigits(this.user_input_number, true);
       }
+
+      setTimeout(function () {
+        _this4.show_success_message = false;
+      }, 2000);
     },
     checkForWinner: function checkForWinner() {
       if (this.guessed_digits_user.length == 4 && this.guessed_digits.length < 4 && this.current_turn === 'player') {
@@ -28558,507 +28565,532 @@ var render = function () {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container" }, [
     _c("div", { staticClass: "row justify-content-center" }, [
-      _c("div", { staticClass: "col-md-8" }, [
-        _vm._m(0),
-        _vm._v(" "),
-        _vm.show_number_card
-          ? _c("div", { staticClass: "card mt-10" }, [
-              _c("div", { staticClass: "card-header" }, [
-                _vm._v("What number do you have in mind..."),
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "card-body" }, [
-                _c("div", { staticClass: "flex justify-center items-center" }, [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.user_input_number[0].value,
-                        expression: "user_input_number[0].value",
-                      },
-                    ],
-                    staticClass:
-                      "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-                    attrs: { type: "number", min: "1", maxlength: 1 },
-                    domProps: { value: _vm.user_input_number[0].value },
-                    on: {
-                      input: function ($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(
-                          _vm.user_input_number[0],
-                          "value",
-                          $event.target.value
-                        )
-                      },
-                    },
-                  }),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.user_input_number[1].value,
-                        expression: "user_input_number[1].value",
-                      },
-                    ],
-                    staticClass:
-                      "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-                    attrs: { type: "number", min: "1", max: "9" },
-                    domProps: { value: _vm.user_input_number[1].value },
-                    on: {
-                      input: function ($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(
-                          _vm.user_input_number[1],
-                          "value",
-                          $event.target.value
-                        )
-                      },
-                    },
-                  }),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.user_input_number[2].value,
-                        expression: "user_input_number[2].value",
-                      },
-                    ],
-                    staticClass:
-                      "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-                    attrs: { type: "number", min: "1", max: "9" },
-                    domProps: { value: _vm.user_input_number[2].value },
-                    on: {
-                      input: function ($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(
-                          _vm.user_input_number[2],
-                          "value",
-                          $event.target.value
-                        )
-                      },
-                    },
-                  }),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.user_input_number[3].value,
-                        expression: "user_input_number[3].value",
-                      },
-                    ],
-                    staticClass:
-                      "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-                    attrs: { type: "number", min: "1", max: "9" },
-                    domProps: { value: _vm.user_input_number[3].value },
-                    on: {
-                      input: function ($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(
-                          _vm.user_input_number[3],
-                          "value",
-                          $event.target.value
-                        )
-                      },
-                    },
-                  }),
+      _c(
+        "div",
+        { staticClass: "col-md-8" },
+        [
+          _vm._m(0),
+          _vm._v(" "),
+          _vm.show_number_card
+            ? _c("div", { staticClass: "card mt-10" }, [
+                _c("div", { staticClass: "card-header" }, [
+                  _vm._v("What number do you have in mind..."),
                 ]),
                 _vm._v(" "),
-                _c(
-                  "button",
+                _c("div", { staticClass: "card-body" }, [
+                  _c(
+                    "div",
+                    { staticClass: "flex justify-center items-center" },
+                    [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.user_input_number[0].value,
+                            expression: "user_input_number[0].value",
+                          },
+                        ],
+                        staticClass:
+                          "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
+                        attrs: { type: "number", min: "1", maxlength: 1 },
+                        domProps: { value: _vm.user_input_number[0].value },
+                        on: {
+                          input: function ($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.user_input_number[0],
+                              "value",
+                              $event.target.value
+                            )
+                          },
+                        },
+                      }),
+                      _vm._v(" "),
+                      _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.user_input_number[1].value,
+                            expression: "user_input_number[1].value",
+                          },
+                        ],
+                        staticClass:
+                          "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
+                        attrs: { type: "number", min: "1", max: "9" },
+                        domProps: { value: _vm.user_input_number[1].value },
+                        on: {
+                          input: function ($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.user_input_number[1],
+                              "value",
+                              $event.target.value
+                            )
+                          },
+                        },
+                      }),
+                      _vm._v(" "),
+                      _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.user_input_number[2].value,
+                            expression: "user_input_number[2].value",
+                          },
+                        ],
+                        staticClass:
+                          "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
+                        attrs: { type: "number", min: "1", max: "9" },
+                        domProps: { value: _vm.user_input_number[2].value },
+                        on: {
+                          input: function ($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.user_input_number[2],
+                              "value",
+                              $event.target.value
+                            )
+                          },
+                        },
+                      }),
+                      _vm._v(" "),
+                      _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.user_input_number[3].value,
+                            expression: "user_input_number[3].value",
+                          },
+                        ],
+                        staticClass:
+                          "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
+                        attrs: { type: "number", min: "1", max: "9" },
+                        domProps: { value: _vm.user_input_number[3].value },
+                        on: {
+                          input: function ($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.user_input_number[3],
+                              "value",
+                              $event.target.value
+                            )
+                          },
+                        },
+                      }),
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass:
+                        "btn btn-primary bg-blue-700 position-center",
+                      attrs: { type: "submit" },
+                      on: { click: _vm.save },
+                    },
+                    [
+                      _vm._v(
+                        "\n                            Save\n                        "
+                      ),
+                    ]
+                  ),
+                ]),
+              ])
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.show_guesses_card
+            ? _c("div", { staticClass: "card mt-10" }, [
+                _c("div", { staticClass: "card-header" }, [
+                  _vm._v("Make your guess..."),
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "card-body" }, [
+                  _c(
+                    "div",
+                    { staticClass: "flex justify-center items-center" },
+                    [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.user_input_guesess[0].value,
+                            expression: "user_input_guesess[0].value",
+                          },
+                        ],
+                        staticClass:
+                          "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
+                        attrs: { type: "number", min: "1", max: "9" },
+                        domProps: { value: _vm.user_input_guesess[0].value },
+                        on: {
+                          input: function ($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.user_input_guesess[0],
+                              "value",
+                              $event.target.value
+                            )
+                          },
+                        },
+                      }),
+                      _vm._v(" "),
+                      _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.user_input_guesess[1].value,
+                            expression: "user_input_guesess[1].value",
+                          },
+                        ],
+                        staticClass:
+                          "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
+                        attrs: { type: "number", min: "1", max: "9" },
+                        domProps: { value: _vm.user_input_guesess[1].value },
+                        on: {
+                          input: function ($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.user_input_guesess[1],
+                              "value",
+                              $event.target.value
+                            )
+                          },
+                        },
+                      }),
+                      _vm._v(" "),
+                      _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.user_input_guesess[2].value,
+                            expression: "user_input_guesess[2].value",
+                          },
+                        ],
+                        staticClass:
+                          "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
+                        attrs: { type: "number", min: "1", max: "9" },
+                        domProps: { value: _vm.user_input_guesess[2].value },
+                        on: {
+                          input: function ($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.user_input_guesess[2],
+                              "value",
+                              $event.target.value
+                            )
+                          },
+                        },
+                      }),
+                      _vm._v(" "),
+                      _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.user_input_guesess[3].value,
+                            expression: "user_input_guesess[3].value",
+                          },
+                        ],
+                        staticClass:
+                          "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
+                        attrs: { type: "number", min: "1", max: "9" },
+                        domProps: { value: _vm.user_input_guesess[3].value },
+                        on: {
+                          input: function ($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.user_input_guesess[3],
+                              "value",
+                              $event.target.value
+                            )
+                          },
+                        },
+                      }),
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass:
+                        "btn btn-primary bg-blue-700 position-center",
+                      attrs: { type: "submit" },
+                      on: { click: _vm.saveScore },
+                    },
+                    [
+                      _vm._v(
+                        "\n                            Next\n                        "
+                      ),
+                    ]
+                  ),
+                ]),
+              ])
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.show_error_message
+            ? _vm._l(_vm.validation_errors, function (item, index) {
+                return _c(
+                  "div",
                   {
-                    staticClass: "btn btn-primary bg-blue-700 position-center",
-                    attrs: { type: "submit" },
-                    on: { click: _vm.save },
+                    key: index,
+                    staticClass:
+                      "bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative",
+                    attrs: { role: "alert" },
                   },
                   [
-                    _vm._v(
-                      "\n                            Save\n                        "
-                    ),
-                  ]
-                ),
-              ]),
-            ])
-          : _vm._e(),
-        _vm._v(" "),
-        _vm.show_guesses_card
-          ? _c("div", { staticClass: "card mt-10" }, [
-              _c("div", { staticClass: "card-header" }, [
-                _vm._v("Make your guess..."),
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "card-body" }, [
-                _c("div", { staticClass: "flex justify-center items-center" }, [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.user_input_guesess[0].value,
-                        expression: "user_input_guesess[0].value",
-                      },
-                    ],
-                    staticClass:
-                      "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-                    attrs: { type: "number", min: "1", max: "9" },
-                    domProps: { value: _vm.user_input_guesess[0].value },
-                    on: {
-                      input: function ($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(
-                          _vm.user_input_guesess[0],
-                          "value",
-                          $event.target.value
-                        )
-                      },
-                    },
-                  }),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.user_input_guesess[1].value,
-                        expression: "user_input_guesess[1].value",
-                      },
-                    ],
-                    staticClass:
-                      "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-                    attrs: { type: "number", min: "1", max: "9" },
-                    domProps: { value: _vm.user_input_guesess[1].value },
-                    on: {
-                      input: function ($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(
-                          _vm.user_input_guesess[1],
-                          "value",
-                          $event.target.value
-                        )
-                      },
-                    },
-                  }),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.user_input_guesess[2].value,
-                        expression: "user_input_guesess[2].value",
-                      },
-                    ],
-                    staticClass:
-                      "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-                    attrs: { type: "number", min: "1", max: "9" },
-                    domProps: { value: _vm.user_input_guesess[2].value },
-                    on: {
-                      input: function ($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(
-                          _vm.user_input_guesess[2],
-                          "value",
-                          $event.target.value
-                        )
-                      },
-                    },
-                  }),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "w-2 py-0.5 bg-gray-400" }),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.user_input_guesess[3].value,
-                        expression: "user_input_guesess[3].value",
-                      },
-                    ],
-                    staticClass:
-                      "w-10 h-10 border-2 rounded outline-none text-center font-semibold text-xl spin-button-none border-gray-200 focus:border-gray-700 focus:text-gray-700 text-black transition",
-                    attrs: { type: "number", min: "1", max: "9" },
-                    domProps: { value: _vm.user_input_guesess[3].value },
-                    on: {
-                      input: function ($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(
-                          _vm.user_input_guesess[3],
-                          "value",
-                          $event.target.value
-                        )
-                      },
-                    },
-                  }),
-                ]),
-                _vm._v(" "),
-                _c(
-                  "button",
-                  {
-                    staticClass: "btn btn-primary bg-blue-700 position-center",
-                    attrs: { type: "submit" },
-                    on: { click: _vm.saveScore },
-                  },
-                  [
-                    _vm._v(
-                      "\n                            Next\n                        "
-                    ),
-                  ]
-                ),
-              ]),
-            ])
-          : _vm._e(),
-        _vm._v(" "),
-        _vm.show_error_message
-          ? _c(
-              "div",
-              {
-                staticClass:
-                  "bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative",
-                attrs: { role: "alert" },
-              },
-              [
-                _c("strong", { staticClass: "font-bold" }, [
-                  _vm._v("An error occured"),
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "block sm:inline" }, [
-                  _vm._v(_vm._s(_vm.error_message)),
-                ]),
-                _vm._v(" "),
-                _c(
-                  "span",
-                  {
-                    staticClass: "absolute top-0 bottom-0 right-0 px-4 py-3",
-                    on: {
-                      click: function ($event) {
-                        _vm.show_error_message = false
-                      },
-                    },
-                  },
-                  [
+                    _c("strong", { staticClass: "font-bold" }, [
+                      _vm._v("An error occured"),
+                    ]),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "block sm:inline" }, [
+                      _vm._v(_vm._s(item[0])),
+                    ]),
+                    _vm._v(" "),
                     _c(
-                      "svg",
+                      "span",
                       {
-                        staticClass: "fill-current h-6 w-6 text-red-500",
-                        attrs: {
-                          role: "button",
-                          xmlns: "http://www.w3.org/2000/svg",
-                          viewBox: "0 0 20 20",
+                        staticClass:
+                          "absolute top-0 bottom-0 right-0 px-4 py-3",
+                        on: {
+                          click: function ($event) {
+                            _vm.show_error_message = false
+                          },
                         },
                       },
                       [
-                        _c("title", [_vm._v("Close")]),
-                        _c("path", {
-                          attrs: {
-                            d: "M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z",
+                        _c(
+                          "svg",
+                          {
+                            staticClass: "fill-current h-6 w-6 text-red-500",
+                            attrs: {
+                              role: "button",
+                              xmlns: "http://www.w3.org/2000/svg",
+                              viewBox: "0 0 20 20",
+                            },
                           },
-                        }),
+                          [
+                            _c("title", [_vm._v("Close")]),
+                            _c("path", {
+                              attrs: {
+                                d: "M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z",
+                              },
+                            }),
+                          ]
+                        ),
                       ]
                     ),
                   ]
-                ),
-              ]
-            )
-          : _vm._e(),
-        _vm._v(" "),
-        _vm.show_success_message
-          ? _c(
-              "div",
-              {
-                staticClass:
-                  "bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative",
-                attrs: { role: "alert" },
-              },
-              [
-                _c("strong", { staticClass: "font-bold" }, [_vm._v("Success")]),
-                _vm._v(" "),
-                _c("span", { staticClass: "block sm:inline" }, [
-                  _vm._v(_vm._s(_vm.success_message)),
-                ]),
-                _vm._v(" "),
-                _c(
-                  "span",
-                  {
-                    staticClass: "absolute top-0 bottom-0 right-0 px-4 py-3",
-                    on: {
-                      click: function ($event) {
-                        _vm.show_success_message = false
-                      },
-                    },
-                  },
-                  [
-                    _c(
-                      "svg",
-                      {
-                        staticClass: "fill-current h-6 w-6 text-green-500",
-                        attrs: {
-                          role: "button",
-                          xmlns: "http://www.w3.org/2000/svg",
-                          viewBox: "0 0 20 20",
+                )
+              })
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.show_success_message
+            ? _c(
+                "div",
+                {
+                  staticClass:
+                    "bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative",
+                  attrs: { role: "alert" },
+                },
+                [
+                  _c("strong", { staticClass: "font-bold" }, [
+                    _vm._v("Success"),
+                  ]),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "block sm:inline" }, [
+                    _vm._v(_vm._s(_vm.success_message)),
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "span",
+                    {
+                      staticClass: "absolute top-0 bottom-0 right-0 px-4 py-3",
+                      on: {
+                        click: function ($event) {
+                          _vm.show_success_message = false
                         },
                       },
-                      [
-                        _c("title", [_vm._v("Close")]),
-                        _c("path", {
+                    },
+                    [
+                      _c(
+                        "svg",
+                        {
+                          staticClass: "fill-current h-6 w-6 text-green-500",
                           attrs: {
-                            d: "M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z",
+                            role: "button",
+                            xmlns: "http://www.w3.org/2000/svg",
+                            viewBox: "0 0 20 20",
                           },
-                        }),
-                      ]
-                    ),
-                  ]
-                ),
-              ]
-            )
-          : _vm._e(),
-        _vm._v(" "),
-        _c("div", { staticClass: "card mt-10" }, [
-          _c("div", { staticClass: "card-header" }, [
-            _vm._v("How is going for you?"),
+                        },
+                        [
+                          _c("title", [_vm._v("Close")]),
+                          _c("path", {
+                            attrs: {
+                              d: "M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z",
+                            },
+                          }),
+                        ]
+                      ),
+                    ]
+                  ),
+                ]
+              )
+            : _vm._e(),
+          _vm._v(" "),
+          _c("div", { staticClass: "card mt-10" }, [
+            _c("div", { staticClass: "card-header" }, [
+              _vm._v("How is going for you?"),
+            ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "card-body" },
+              [
+                _c("div", { staticClass: "flex" }, [
+                  _c("img", {
+                    attrs: {
+                      src: "/images/bull-icon.png",
+                      alt: "",
+                      height: "70px",
+                      width: "70px",
+                    },
+                  }),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "py-3 -px-2" }, [
+                    _vm._v(": " + _vm._s(_vm.found_bulls_user)),
+                  ]),
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "flex" }, [
+                  _c("img", {
+                    staticClass: "ml-3",
+                    attrs: {
+                      src: "/images/cow-icon.png",
+                      alt: "",
+                      height: "50px",
+                      width: "50px",
+                    },
+                  }),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "pt-3" }, [
+                    _vm._v(": " + _vm._s(_vm.found_cows_user)),
+                  ]),
+                ]),
+                _vm._v(" "),
+                _c("p", [
+                  _vm._v("Guessed Digits: "),
+                  _c("strong", [
+                    _vm._v(_vm._s(_vm.guessed_digits_user_count) + " / 4"),
+                  ]),
+                ]),
+                _vm._v(" "),
+                _c("span", [_vm._v("What you found so far:")]),
+                _vm._v(" "),
+                _vm._l(_vm.guessed_digits_user, function (digit, index) {
+                  return _c("span", { key: index }, [
+                    _vm._v(_vm._s(digit) + " "),
+                  ])
+                }),
+              ],
+              2
+            ),
           ]),
           _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "card-body" },
-            [
-              _c("div", { staticClass: "flex" }, [
-                _c("img", {
-                  attrs: {
-                    src: "/images/bull-icon.png",
-                    alt: "",
-                    height: "70px",
-                    width: "70px",
-                  },
-                }),
+          _c("div", { staticClass: "card mt-10" }, [
+            _c("div", { staticClass: "card-header" }, [
+              _vm._v("How is going for the other guy?"),
+            ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "card-body" },
+              [
+                _c("div", { staticClass: "flex" }, [
+                  _c("img", {
+                    attrs: {
+                      src: "/images/bull-icon.png",
+                      alt: "",
+                      height: "70px",
+                      width: "70px",
+                    },
+                  }),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "py-3 -px-2" }, [
+                    _vm._v(": " + _vm._s(_vm.found_bulls)),
+                  ]),
+                ]),
                 _vm._v(" "),
-                _c("span", { staticClass: "py-3 -px-2" }, [
-                  _vm._v(": " + _vm._s(_vm.found_bulls_user)),
+                _c("div", { staticClass: "flex" }, [
+                  _c("img", {
+                    staticClass: "ml-3",
+                    attrs: {
+                      src: "/images/cow-icon.png",
+                      alt: "",
+                      height: "50px",
+                      width: "50px",
+                    },
+                  }),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "pt-3" }, [
+                    _vm._v(": " + _vm._s(_vm.found_cows)),
+                  ]),
                 ]),
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "flex" }, [
-                _c("img", {
-                  staticClass: "ml-3",
-                  attrs: {
-                    src: "/images/cow-icon.png",
-                    alt: "",
-                    height: "50px",
-                    width: "50px",
-                  },
-                }),
                 _vm._v(" "),
-                _c("span", { staticClass: "pt-3" }, [
-                  _vm._v(": " + _vm._s(_vm.found_cows_user)),
+                _c("p", [
+                  _vm._v("Guessed Digits: "),
+                  _c("strong", [
+                    _vm._v(_vm._s(_vm.guessed_digits_count) + " / 4"),
+                  ]),
                 ]),
-              ]),
-              _vm._v(" "),
-              _c("p", [
-                _vm._v("Guessed Digits: "),
-                _c("strong", [
-                  _vm._v(_vm._s(_vm.guessed_digits_user_count) + " / 4"),
-                ]),
-              ]),
-              _vm._v(" "),
-              _c("span", [_vm._v("What you found so far:")]),
-              _vm._v(" "),
-              _vm._l(_vm.guessed_digits_user, function (digit, index) {
-                return _c("span", { key: index }, [_vm._v(_vm._s(digit) + " ")])
-              }),
-            ],
-            2
-          ),
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "card mt-10" }, [
-          _c("div", { staticClass: "card-header" }, [
-            _vm._v("How is going for the other guy?"),
+                _vm._v(" "),
+                _c("span", [_vm._v("What you found so far: ")]),
+                _vm._v(" "),
+                _vm._l(_vm.guessed_digits, function (digit, index) {
+                  return _c("span", { key: index }, [
+                    _vm._v(_vm._s(digit) + " "),
+                  ])
+                }),
+              ],
+              2
+            ),
           ]),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "card-body" },
-            [
-              _c("div", { staticClass: "flex" }, [
-                _c("img", {
-                  attrs: {
-                    src: "/images/bull-icon.png",
-                    alt: "",
-                    height: "70px",
-                    width: "70px",
-                  },
-                }),
-                _vm._v(" "),
-                _c("span", { staticClass: "py-3 -px-2" }, [
-                  _vm._v(": " + _vm._s(_vm.found_bulls)),
-                ]),
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "flex" }, [
-                _c("img", {
-                  staticClass: "ml-3",
-                  attrs: {
-                    src: "/images/cow-icon.png",
-                    alt: "",
-                    height: "50px",
-                    width: "50px",
-                  },
-                }),
-                _vm._v(" "),
-                _c("span", { staticClass: "pt-3" }, [
-                  _vm._v(": " + _vm._s(_vm.found_cows)),
-                ]),
-              ]),
-              _vm._v(" "),
-              _c("p", [
-                _vm._v("Guessed Digits: "),
-                _c("strong", [
-                  _vm._v(_vm._s(_vm.guessed_digits_count) + " / 4"),
-                ]),
-              ]),
-              _vm._v(" "),
-              _c("span", [_vm._v("What you found so far: ")]),
-              _vm._v(" "),
-              _vm._l(_vm.guessed_digits, function (digit, index) {
-                return _c("span", { key: index }, [_vm._v(_vm._s(digit) + " ")])
-              }),
-            ],
-            2
-          ),
-        ]),
-      ]),
+        ],
+        2
+      ),
     ]),
   ])
 }

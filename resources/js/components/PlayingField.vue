@@ -145,13 +145,15 @@
                             </button>
                     </div>
                 </div>
-                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert" v-if="show_error_message">
+                <template v-if="show_error_message">
+                    <div v-for="(item, index) in validation_errors" :key="index" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert" >
                         <strong class="font-bold">An error occured</strong>
-                        <span class="block sm:inline">{{error_message}}</span>
+                        <span class="block sm:inline">{{item[0]}}</span>
                         <span class="absolute top-0 bottom-0 right-0 px-4 py-3" @click="show_error_message = false">
                             <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
                         </span>
                     </div>
+                </template>
 
                     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert" v-if="show_success_message">
                         <strong class="font-bold">Success</strong>
@@ -276,7 +278,8 @@ import axios from 'axios';
                 show_error_message: false,
                 show_number_card: true,
                 show_guesses_card: false,
-                current_turn: 'player'
+                current_turn: 'player',
+                validation_errors: []
             }
         },
 
@@ -318,7 +321,8 @@ import axios from 'axios';
                     this.checkForWinner()
                 })
                 .catch(err => {
-                    console.log(err)
+                    this.show_error_message = true;
+                    this.validation_errors = err.response.data.errors;
                 })
             },
 
@@ -390,9 +394,8 @@ import axios from 'axios';
                     this.checkForGuessedDigits(this.generated_digits, this.user_input_number, false)
                 })
                 .catch(err => {
-                    this.show_error_message = true;
-                    this.error_message = 'The input may not be greater than 9.';
-                    console.log(err)
+                   this.show_error_message = true;
+                    this.validation_errors = err.response.data.errors;
                 })
             },
 
@@ -411,12 +414,16 @@ import axios from 'axios';
                 })
                 .catch(err => {
                     this.show_error_message = true;
-                    this.error_message = 'The input may not be greater than 9.';
+                    this.validation_errors = err.response.data.errors;
                 })
                 
                 if(this.user_input_number.find(el => el.value == 1) && this.user_input_number.find(el => el.value == 8)){
                     this.moveDigits(this.user_input_number, true)
                 }
+
+                setTimeout(() => {
+                    this.show_success_message = false;
+                }, 2000);
             },
 
             checkForWinner(){

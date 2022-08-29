@@ -28,8 +28,9 @@ class InputRequest extends FormRequest
             'digit' => 'sometimes|max:9',
             'position' => 'sometimes|numeric',
             'array' => 'sometimes',
-            'input_array.*.value' => 'numeric|max:9',
+            'input_array.*.value' => 'numeric|min:1|max:9',
             'input_array.*.position' => 'numeric',
+            'generated_array.*' => 'numeric|min:1|max:9',
             'bulls_found' => 'sometimes',
             'cows_found' => 'sometimes',
             'full_numbers_found' => 'sometimes'
@@ -39,7 +40,10 @@ class InputRequest extends FormRequest
     public function messages()
     {
         return [
+            'input_array.*.value.min' => 'The input should be greater than 0.',
             'input_array.*.value.max' => 'The input may not be greater than 9.',
+            'generated_array.*.value.min' => 'The input should be greater than 0.',
+            'generated_array.*.value.max' => 'The input may not be greater than 9.',
         ];
     }
 }
