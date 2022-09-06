@@ -15,6 +15,6 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        User::factory()->has(Score::factory()->times(5))->times(1)->create();
+        User::factory()->has(Score::factory()->times(10))->times(10)->create();
     }
 }

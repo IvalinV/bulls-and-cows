@@ -25,6 +25,7 @@
                                 border-gray-200 focus:border-gray-700 
                                 focus:text-gray-700 text-black transition"
                                 v-model="user_input_number[0].value"
+                                dusk="first-number"
                             />
                             <span class="w-2 py-0.5 bg-gray-400" />
 
@@ -38,6 +39,7 @@
                                 border-gray-200 focus:border-gray-700 
                                 focus:text-gray-700 text-black transition"
                                 v-model="user_input_number[1].value"
+                                dusk="second-number"
 
                             />
                             <span class="w-2 py-0.5 bg-gray-400" />
@@ -52,6 +54,7 @@
                                 border-gray-200 focus:border-gray-700 
                                 focus:text-gray-700 text-black transition"
                                 v-model="user_input_number[2].value"
+                                dusk="third-number"
 
                             />
                             <span class="w-2 py-0.5 bg-gray-400" />
@@ -66,9 +69,12 @@
                                 border-gray-200 focus:border-gray-700 
                                 focus:text-gray-700 text-black transition"
                                 v-model="user_input_number[3].value"
+                                dusk="fourth-number"
                             />
                         </div>
-                            <button type="submit" 
+                            <button
+                                dusk="save-button" 
+                                type="submit" 
                                 class="btn btn-primary bg-blue-700 position-center"
                                 @click="save"
                             >
@@ -95,6 +101,7 @@
                                 border-gray-200 focus:border-gray-700 
                                 focus:text-gray-700 text-black transition"
                                 v-model="user_input_guesess[0].value"
+                                dusk="first-number-guess"
                             />
                             <span class="w-2 py-0.5 bg-gray-400" />
 
@@ -108,6 +115,7 @@
                                 border-gray-200 focus:border-gray-700 
                                 focus:text-gray-700 text-black transition"
                                 v-model="user_input_guesess[1].value"
+                                dusk="second-number-guess"
 
                             />
                             <span class="w-2 py-0.5 bg-gray-400" />
@@ -122,6 +130,7 @@
                                 border-gray-200 focus:border-gray-700 
                                 focus:text-gray-700 text-black transition"
                                 v-model="user_input_guesess[2].value"
+                                dusk="third-number-guess"
                             />
                             <span class="w-2 py-0.5 bg-gray-400" />
 
@@ -135,9 +144,12 @@
                                 border-gray-200 focus:border-gray-700 
                                 focus:text-gray-700 text-black transition"
                                 v-model="user_input_guesess[3].value"
+                                dusk="fourth-number-guess"
                             />
                         </div>
-                            <button type="submit" 
+                            <button
+                                dusk="next-button" 
+                                type="submit" 
                                 class="btn btn-primary bg-blue-700 position-center"
                                 @click="saveScore"
                             >
