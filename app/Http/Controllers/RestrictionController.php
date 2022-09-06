@@ -20,6 +20,13 @@ class RestrictionController extends Controller
 
         $element_eight = $input_collection->where('value', 8)->first();
         $element_one = $input_collection->where('value', 1)->first();
+        
+
+        $areNextTo = $element_eight['position'] - $element_one['position'] == 1;
+
+        if($areNextTo){
+            return;
+        }
 
         $temp = $input[0];
         $temp1 = $input[1];
